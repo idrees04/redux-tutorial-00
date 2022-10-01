@@ -1,47 +1,51 @@
 import { createStore } from "redux";
-const app = document.getElementById("root");
+import {v4 as uuid} from "uuid";
+import rootReducer, {incr, decr, res,ADD_TODO, REM_TODO, TOGGLE_TODO } from "./reducers";
+const counterApp = document.getElementById("root");
 const increment = document.getElementById("inc");
 const decrement = document.getElementById("dec");
-//these are 3 actions related to counter reducer
-const INCREMENT = "INCREMENT";
-const DECREMENT = "DECREMENT";
-const RESET = "RESET";
-//these are 3 action creators related to counter reducer
-const incr =(num)=>{
-    return{"type":"INCREMENT", payload:num }
-};
-const decr =(num)=>{
-    return{"type":"DECREMENT", payload:num}
-};
-const res =()=>{
-    return{"type":"RESET"}
-};
-
-
+const todoApp = document.getElementById("app");
+const todoText = document.getElementById("todo");
+const addBtn=document.getElementById("add_todo");
+const num = +document.getElementById('num').value
 const reset = document.getElementById("reset");
-const counter = (state = {value : 1}, action = {}) => {
-    switch (action.type) {
-        case INCREMENT:
-            return {value: state.value + action.payload};
-        case DECREMENT:
-            return {value: state.value  - action.payload};
-        case RESET:
-            return {value:1};
-        default:
-            return state;
-    }
-};
+
 //Redux store for Counter App
-const store = createStore(counter);
+const store = createStore(rootReducer);
 console.log(store);
 store.subscribe(() => {  
-      let {value} = store.getState();
-      app.innerHTML = value;
-      value < 10 ? increment.removeAttribute("disabled")
+    //counter app logic
+      let {counter, todos} = store.getState();
+      counterApp.innerHTML = counter.value;
+      counter.value < 10 ? 
+      increment.removeAttribute("disabled")
       : increment.setAttribute("disabled", "disabled");
 
-      value > 1 ? decrement.removeAttribute("disabled")
+      counter.value > 1 
+      ? decrement.removeAttribute("disabled")
       : decrement.setAttribute("disabled", "disabled");
+//todo app logic
+const textItem = todos.length > 0 ? "": "<li>There are no todo items...</li>";
+app.innerHTML= textItem;
+todos.length > 0 && 
+todos.forEach((todo) => {
+    const li = document.createElement("li");
+    li.type="list";
+    li.setAttribute('data-id',todo.id);
+    const itemClass= todo.completed ? "completed" : "notcompleted";
+    li.classList.add(itemClass);
+    const btnRem = document.createElement("button");
+    btnRem.type="button";
+    btnRem.classList.add("rem-todo");
+    btnRem.setAttribute('data-id',todo.id);
+    const btnText=document.createTextNode("x");
+    const text = document.createTextNode(todo.title);
+    btnRem.appendChild(btnText);
+    li.appendChild(text);
+    li.appendChild(btnRem);
+    app.appendChild(li);
+});
+
 });
 
 window.onload = function () {
@@ -50,15 +54,13 @@ window.onload = function () {
 increment.addEventListener("click", () => {
     //store.getState() < 10 && store.dispatch({ type: INCREMENT });
   //  store.getState() < 10 && store.dispatch(incr(2));
-    const num = +document.getElementById('num').value
-    store.getState().value < 10 && store.dispatch(incr(num));
+    store.getState().counter.value < 10 && store.dispatch(incr(num));
 
 });
 decrement.addEventListener("click", () => {
    // store.getState() > 1 &&  store.dispatch({ type: DECREMENT });
   // store.getState() > 1 &&  store.dispatch(decr(2));
-   const num = +document.getElementById('num').value
-   store.getState().value > 1 &&  store.dispatch(decr(num));
+   store.getState().counter.value > 1 &&  store.dispatch(decr(num));
 
 
 });
@@ -67,3 +69,22 @@ reset.addEventListener("click", () => {
    store.dispatch(res());
 
 });
+
+addBtn.addEventListener(
+    "click", 
+    ()=> 
+    todoText.value != "" && store.dispatch({
+         type: ADD_TODO, 
+         payload: { id : uuid(), title: todoText.value, completed: false},
+})
+);
+todoApp.addEventListener("click",(e)=>{
+//  console.log(e.target.dataset.id);
+const id=e.target.dataset.id;
+const type = e.target.type==="button"? REM_TODO : TOGGLE_TODO;
+id != undefined && store.dispatch({
+    type: type,
+    payload: id,
+});
+});
+

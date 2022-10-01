@@ -532,61 +532,48 @@ function hmrAcceptRun(bundle, id) {
 }
 
 },{}],"igcvL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 var _redux = require("redux");
-const app = document.getElementById("root");
+var _uuid = require("uuid");
+var _reducers = require("./reducers");
+var _reducersDefault = parcelHelpers.interopDefault(_reducers);
+const counterApp = document.getElementById("root");
 const increment = document.getElementById("inc");
 const decrement = document.getElementById("dec");
-//these are 3 actions related to counter reducer
-const INCREMENT = "INCREMENT";
-const DECREMENT = "DECREMENT";
-const RESET = "RESET";
-//these are 3 action creators related to counter reducer
-const incr = (num)=>{
-    return {
-        "type": "INCREMENT",
-        payload: num
-    };
-};
-const decr = (num)=>{
-    return {
-        "type": "DECREMENT",
-        payload: num
-    };
-};
-const res = ()=>{
-    return {
-        "type": "RESET"
-    };
-};
+const todoApp = document.getElementById("app");
+const todoText = document.getElementById("todo");
+const addBtn = document.getElementById("add_todo");
+const num = +document.getElementById("num").value;
 const reset = document.getElementById("reset");
-const counter = (state = {
-    value: 1
-}, action = {})=>{
-    switch(action.type){
-        case INCREMENT:
-            return {
-                value: state.value + action.payload
-            };
-        case DECREMENT:
-            return {
-                value: state.value - action.payload
-            };
-        case RESET:
-            return {
-                value: 1
-            };
-        default:
-            return state;
-    }
-};
 //Redux store for Counter App
-const store = (0, _redux.createStore)(counter);
+const store = (0, _redux.createStore)((0, _reducersDefault.default));
 console.log(store);
 store.subscribe(()=>{
-    let { value  } = store.getState();
-    app.innerHTML = value;
-    value < 10 ? increment.removeAttribute("disabled") : increment.setAttribute("disabled", "disabled");
-    value > 1 ? decrement.removeAttribute("disabled") : decrement.setAttribute("disabled", "disabled");
+    //counter app logic
+    let { counter , todos  } = store.getState();
+    counterApp.innerHTML = counter.value;
+    counter.value < 10 ? increment.removeAttribute("disabled") : increment.setAttribute("disabled", "disabled");
+    counter.value > 1 ? decrement.removeAttribute("disabled") : decrement.setAttribute("disabled", "disabled");
+    //todo app logic
+    const textItem = todos.length > 0 ? "" : "<li>There are no todo items...</li>";
+    app.innerHTML = textItem;
+    todos.length > 0 && todos.forEach((todo)=>{
+        const li = document.createElement("li");
+        li.type = "list";
+        li.setAttribute("data-id", todo.id);
+        const itemClass = todo.completed ? "completed" : "notcompleted";
+        li.classList.add(itemClass);
+        const btnRem = document.createElement("button");
+        btnRem.type = "button";
+        btnRem.classList.add("rem-todo");
+        btnRem.setAttribute("data-id", todo.id);
+        const btnText = document.createTextNode("x");
+        const text = document.createTextNode(todo.title);
+        btnRem.appendChild(btnText);
+        li.appendChild(text);
+        li.appendChild(btnRem);
+        app.appendChild(li);
+    });
 });
 window.onload = function() {
     store.dispatch({
@@ -596,21 +583,36 @@ window.onload = function() {
 increment.addEventListener("click", ()=>{
     //store.getState() < 10 && store.dispatch({ type: INCREMENT });
     //  store.getState() < 10 && store.dispatch(incr(2));
-    const num = +document.getElementById("num").value;
-    store.getState().value < 10 && store.dispatch(incr(num));
+    store.getState().counter.value < 10 && store.dispatch((0, _reducers.incr)(num));
 });
 decrement.addEventListener("click", ()=>{
     // store.getState() > 1 &&  store.dispatch({ type: DECREMENT });
     // store.getState() > 1 &&  store.dispatch(decr(2));
-    const num = +document.getElementById("num").value;
-    store.getState().value > 1 && store.dispatch(decr(num));
+    store.getState().counter.value > 1 && store.dispatch((0, _reducers.decr)(num));
 });
 reset.addEventListener("click", ()=>{
     // store.dispatch({ type: RESET });
-    store.dispatch(res());
+    store.dispatch((0, _reducers.res)());
+});
+addBtn.addEventListener("click", ()=>todoText.value != "" && store.dispatch({
+        type: (0, _reducers.ADD_TODO),
+        payload: {
+            id: (0, _uuid.v4)(),
+            title: todoText.value,
+            completed: false
+        }
+    }));
+todoApp.addEventListener("click", (e)=>{
+    //  console.log(e.target.dataset.id);
+    const id = e.target.dataset.id;
+    const type = e.target.type === "button" ? (0, _reducers.REM_TODO) : (0, _reducers.TOGGLE_TODO);
+    id != undefined && store.dispatch({
+        type: type,
+        payload: id
+    });
 });
 
-},{"redux":"cDNB3"}],"cDNB3":[function(require,module,exports) {
+},{"redux":"cDNB3","uuid":"j4KJi","./reducers":"idxOO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cDNB3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "__DO_NOT_USE__ActionTypes", ()=>ActionTypes);
@@ -1201,6 +1203,230 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}]},["euTuy","igcvL"], "igcvL", "parcelRequire020f")
+},{}],"j4KJi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "v1", ()=>(0, _v1JsDefault.default));
+parcelHelpers.export(exports, "v3", ()=>(0, _v3JsDefault.default));
+parcelHelpers.export(exports, "v4", ()=>(0, _v4JsDefault.default));
+parcelHelpers.export(exports, "v5", ()=>(0, _v5JsDefault.default));
+parcelHelpers.export(exports, "NIL", ()=>(0, _nilJsDefault.default));
+parcelHelpers.export(exports, "version", ()=>(0, _versionJsDefault.default));
+parcelHelpers.export(exports, "validate", ()=>(0, _validateJsDefault.default));
+parcelHelpers.export(exports, "stringify", ()=>(0, _stringifyJsDefault.default));
+parcelHelpers.export(exports, "parse", ()=>(0, _parseJsDefault.default));
+var _v1Js = require("./v1.js");
+var _v1JsDefault = parcelHelpers.interopDefault(_v1Js);
+var _v3Js = require("./v3.js");
+var _v3JsDefault = parcelHelpers.interopDefault(_v3Js);
+var _v4Js = require("./v4.js");
+var _v4JsDefault = parcelHelpers.interopDefault(_v4Js);
+var _v5Js = require("./v5.js");
+var _v5JsDefault = parcelHelpers.interopDefault(_v5Js);
+var _nilJs = require("./nil.js");
+var _nilJsDefault = parcelHelpers.interopDefault(_nilJs);
+var _versionJs = require("./version.js");
+var _versionJsDefault = parcelHelpers.interopDefault(_versionJs);
+var _validateJs = require("./validate.js");
+var _validateJsDefault = parcelHelpers.interopDefault(_validateJs);
+var _stringifyJs = require("./stringify.js");
+var _stringifyJsDefault = parcelHelpers.interopDefault(_stringifyJs);
+var _parseJs = require("./parse.js");
+var _parseJsDefault = parcelHelpers.interopDefault(_parseJs);
+
+},{"./v1.js":false,"./v3.js":false,"./v4.js":"8zJtu","./v5.js":false,"./nil.js":false,"./version.js":false,"./validate.js":"eHPgI","./stringify.js":"5Y9F1","./parse.js":false,"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8zJtu":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _nativeJs = require("./native.js");
+var _nativeJsDefault = parcelHelpers.interopDefault(_nativeJs);
+var _rngJs = require("./rng.js");
+var _rngJsDefault = parcelHelpers.interopDefault(_rngJs);
+var _stringifyJs = require("./stringify.js");
+function v4(options, buf, offset) {
+    if ((0, _nativeJsDefault.default).randomUUID && !buf && !options) return (0, _nativeJsDefault.default).randomUUID();
+    options = options || {};
+    const rnds = options.random || (options.rng || (0, _rngJsDefault.default))(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+    rnds[6] = rnds[6] & 0x0f | 0x40;
+    rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+    if (buf) {
+        offset = offset || 0;
+        for(let i = 0; i < 16; ++i)buf[offset + i] = rnds[i];
+        return buf;
+    }
+    return (0, _stringifyJs.unsafeStringify)(rnds);
+}
+exports.default = v4;
+
+},{"./native.js":"lYayS","./rng.js":"2psyE","./stringify.js":"5Y9F1","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lYayS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+const randomUUID = typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID.bind(crypto);
+exports.default = {
+    randomUUID
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2psyE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Unique ID creation requires a high quality random # generator. In the browser we therefore
+// require the crypto API and do not support built-in fallback to lower quality random number
+// generators (like Math.random()).
+let getRandomValues;
+const rnds8 = new Uint8Array(16);
+function rng() {
+    // lazy load so that environments that need to polyfill have a chance to do so
+    if (!getRandomValues) {
+        // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
+        getRandomValues = typeof crypto !== "undefined" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto);
+        if (!getRandomValues) throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
+    }
+    return getRandomValues(rnds8);
+}
+exports.default = rng;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5Y9F1":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "unsafeStringify", ()=>unsafeStringify);
+var _validateJs = require("./validate.js");
+var _validateJsDefault = parcelHelpers.interopDefault(_validateJs);
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */ const byteToHex = [];
+for(let i = 0; i < 256; ++i)byteToHex.push((i + 0x100).toString(16).slice(1));
+function unsafeStringify(arr, offset = 0) {
+    // Note: Be careful editing this code!  It's been tuned for performance
+    // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+    return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
+}
+function stringify(arr, offset = 0) {
+    const uuid = unsafeStringify(arr, offset); // Consistency check for valid UUID.  If this throws, it's likely due to one
+    // of the following:
+    // - One or more input array values don't map to a hex octet (leading to
+    // "undefined" in the uuid)
+    // - Invalid input values for the RFC `version` or `variant` fields
+    if (!(0, _validateJsDefault.default)(uuid)) throw TypeError("Stringified UUID is invalid");
+    return uuid;
+}
+exports.default = stringify;
+
+},{"./validate.js":"eHPgI","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eHPgI":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _regexJs = require("./regex.js");
+var _regexJsDefault = parcelHelpers.interopDefault(_regexJs);
+function validate(uuid) {
+    return typeof uuid === "string" && (0, _regexJsDefault.default).test(uuid);
+}
+exports.default = validate;
+
+},{"./regex.js":"bUa5g","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bUa5g":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"idxOO":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "INCREMENT", ()=>INCREMENT);
+parcelHelpers.export(exports, "DECREMENT", ()=>DECREMENT);
+parcelHelpers.export(exports, "RESET", ()=>RESET);
+parcelHelpers.export(exports, "incr", ()=>incr);
+parcelHelpers.export(exports, "decr", ()=>decr);
+parcelHelpers.export(exports, "res", ()=>res);
+parcelHelpers.export(exports, "ADD_TODO", ()=>ADD_TODO);
+parcelHelpers.export(exports, "REM_TODO", ()=>REM_TODO);
+parcelHelpers.export(exports, "TOGGLE_TODO", ()=>TOGGLE_TODO);
+var _redux = require("redux");
+const INCREMENT = "INCREMENT";
+const DECREMENT = "DECREMENT";
+const RESET = "RESET";
+const incr = (num)=>{
+    return {
+        "type": "INCREMENT",
+        payload: num
+    };
+};
+const decr = (num)=>{
+    return {
+        "type": "DECREMENT",
+        payload: num
+    };
+};
+const res = ()=>{
+    return {
+        "type": "RESET"
+    };
+};
+const ADD_TODO = "ADD_TODO";
+const REM_TODO = "REM_TODO";
+const TOGGLE_TODO = "TOGGLE_TODO";
+//define action creators for todo app
+const add = (todo)=>{
+    return {
+        type: ADD_TODO,
+        payload: todo
+    };
+};
+const remove = (id)=>{
+    return {
+        type: REM_TODO,
+        payload: id
+    };
+};
+const toggle = (id)=>{
+    return {
+        type: TOGGLE_TODO,
+        payload: id
+    };
+};
+//Redux reducer for todo app
+const todoReducer = (state = [], action = {})=>{
+    switch(action.type){
+        case ADD_TODO:
+            return [
+                ...state,
+                action.payload
+            ];
+        case REM_TODO:
+            return state.filter((todo)=>todo.id !== action.payload);
+        case TOGGLE_TODO:
+            return state.map((todo)=>todo.id == action.payload ? {
+                    ...todo,
+                    completed: !todo.completed
+                } : todo);
+        default:
+            return state;
+    }
+};
+//Redux reducer for counter App
+const counterReducer = (state = {
+    value: 1
+}, action = {})=>{
+    switch(action.type){
+        case INCREMENT:
+            return {
+                value: state.value + action.payload
+            };
+        case DECREMENT:
+            return {
+                value: state.value - action.payload
+            };
+        case RESET:
+            return {
+                value: 1
+            };
+        default:
+            return state;
+    }
+};
+const rootReducer = (0, _redux.combineReducers)({
+    counter: counterReducer,
+    todos: todoReducer
+});
+exports.default = rootReducer;
+
+},{"redux":"cDNB3","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["euTuy","igcvL"], "igcvL", "parcelRequire020f")
 
 //# sourceMappingURL=index.5baa4167.js.map
