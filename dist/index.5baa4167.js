@@ -540,7 +540,8 @@ var _reducersDefault = parcelHelpers.interopDefault(_reducers);
 const counterApp = document.getElementById("root");
 const increment = document.getElementById("inc");
 const decrement = document.getElementById("dec");
-const todoApp = document.getElementById("app");
+const cmpTask = document.getElementById("cmp");
+const ncmpTask = document.getElementById("ncmp");
 const todoText = document.getElementById("todo");
 const addBtn = document.getElementById("add_todo");
 const num = +document.getElementById("num").value;
@@ -556,7 +557,8 @@ store.subscribe(()=>{
     counter.value > 1 ? decrement.removeAttribute("disabled") : decrement.setAttribute("disabled", "disabled");
     //todo app logic
     const textItem = todos.length > 0 ? "" : "<li>There are no todo items...</li>";
-    app.innerHTML = textItem;
+    ncmpTask.innerHTML = textItem;
+    cmpTask.innerHTML = textItem;
     todos.length > 0 && todos.forEach((todo)=>{
         const li = document.createElement("li");
         li.type = "list";
@@ -572,7 +574,7 @@ store.subscribe(()=>{
         btnRem.appendChild(btnText);
         li.appendChild(text);
         li.appendChild(btnRem);
-        app.appendChild(li);
+        todo.completed ? cmpTask.appendChild(li) : ncmpTask.appendChild(li);
     });
 });
 window.onload = function() {
@@ -602,15 +604,16 @@ addBtn.addEventListener("click", ()=>todoText.value != "" && store.dispatch({
             completed: false
         }
     }));
-todoApp.addEventListener("click", (e)=>{
-    //  console.log(e.target.dataset.id);
+function taskHandler(e) {
     const id = e.target.dataset.id;
     const type = e.target.type === "button" ? (0, _reducers.REM_TODO) : (0, _reducers.TOGGLE_TODO);
     id != undefined && store.dispatch({
         type: type,
         payload: id
     });
-});
+}
+ncmpTask.addEventListener("click", taskHandler);
+cmpTask.addEventListener("click", taskHandler);
 
 },{"redux":"cDNB3","uuid":"j4KJi","./reducers":"idxOO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cDNB3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");

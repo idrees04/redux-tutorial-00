@@ -4,7 +4,9 @@ import rootReducer, {incr, decr, res,ADD_TODO, REM_TODO, TOGGLE_TODO } from "./r
 const counterApp = document.getElementById("root");
 const increment = document.getElementById("inc");
 const decrement = document.getElementById("dec");
-const todoApp = document.getElementById("app");
+const cmpTask = document.getElementById("cmp");
+const ncmpTask = document.getElementById("ncmp");
+
 const todoText = document.getElementById("todo");
 const addBtn=document.getElementById("add_todo");
 const num = +document.getElementById('num').value
@@ -26,7 +28,9 @@ store.subscribe(() => {
       : decrement.setAttribute("disabled", "disabled");
 //todo app logic
 const textItem = todos.length > 0 ? "": "<li>There are no todo items...</li>";
-app.innerHTML= textItem;
+ncmpTask.innerHTML= textItem;
+cmpTask.innerHTML= textItem;
+
 todos.length > 0 && 
 todos.forEach((todo) => {
     const li = document.createElement("li");
@@ -43,7 +47,8 @@ todos.forEach((todo) => {
     btnRem.appendChild(btnText);
     li.appendChild(text);
     li.appendChild(btnRem);
-    app.appendChild(li);
+    todo.completed ? cmpTask.appendChild(li) : ncmpTask.appendChild(li);
+
 });
 
 });
@@ -78,13 +83,13 @@ addBtn.addEventListener(
          payload: { id : uuid(), title: todoText.value, completed: false},
 })
 );
-todoApp.addEventListener("click",(e)=>{
-//  console.log(e.target.dataset.id);
-const id=e.target.dataset.id;
-const type = e.target.type==="button"? REM_TODO : TOGGLE_TODO;
-id != undefined && store.dispatch({
-    type: type,
-    payload: id,
-});
-});
-
+function taskHandler(e){
+    const id=e.target.dataset.id;
+    const type = e.target.type==="button"? REM_TODO : TOGGLE_TODO;
+    id != undefined && store.dispatch({
+        type: type,
+        payload: id,
+    });
+}
+ncmpTask.addEventListener("click",taskHandler);
+cmpTask.addEventListener("click",taskHandler);
